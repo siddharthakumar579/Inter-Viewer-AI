@@ -76,7 +76,7 @@ The frontend runs on `http://localhost:5173` and the backend on `http://localhos
 
 1. **Sign up / Log in** to your account.
 2. **Paste a job description** in the left panel on the home page.
-3. **Upload your resume** (PDF) or type a self-description in the right panel.
+3. **Upload either your resume** (PDF) or type a self-description or both in the right panel.
 4. **Click Generate** — Gemini AI analyzes the match and creates a personalized interview preparation report.
 5. **View your report** with match score, suggested questions, and improvement areas.
 6. **Download** an ATS-optimized resume tailored to the job description.

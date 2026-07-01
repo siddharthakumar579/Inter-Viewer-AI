@@ -33,6 +33,7 @@ export async function login({email, password}) {
 
     } catch (err) {
         console.log(err)
+        throw err
     }
     
 }
@@ -46,7 +47,8 @@ export async function logout() {
         return response.data
 
     } catch (err) {
-        console.log(err);
+        console.log(err)
+        throw err
     }
 }
 
@@ -59,6 +61,7 @@ export async function getme() {
 
     } catch (err) {
         console.log(err);
+        throw err;
     }
     
 }

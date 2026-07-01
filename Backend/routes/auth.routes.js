@@ -10,7 +10,6 @@ authrouter.post('/register', authController.registerUserController)
 
 
 
-
 //Route to logIn an existing user
 authrouter.post('/login', authController.loginUserController)
 

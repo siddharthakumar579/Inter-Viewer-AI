@@ -2,58 +2,104 @@ import React from 'react'
 import './auth.form.scss';
 import { useNavigate, Link } from 'react-router';
 import { useAuth } from '../hooks/useAuth';
-import { useState } from 'react';
-
-
+import { useState, useEffect } from 'react';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { loading, handleLogin, handleLogout, user } = useAuth();
 
-  const {loading, handleLogin} = useAuth()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  // ── Auto-logout: if an authenticated user lands on /login, log them out
+  useEffect(() => {
+    if (!loading && user && !isSubmitting) {
+      handleLogout();
+    }
+  }, [loading, user, isSubmitting]);
 
-  if (loading) {
-    return (<main><h1>Loading.......</h1></main>)
+  // ── Auto-redirect: navigate to home once login succeeds
+  useEffect(() => {
+    if (user && isSubmitting) {
+      navigate('/');
+    }
+  }, [user, isSubmitting, navigate]);
+
+  if (loading && !isSubmitting) {
+    return <div className="auth-loading">Checking session...</div>;
   }
 
   function handleSubmit(e) {
     e.preventDefault();
-    handleLogin({email, password})
-    navigate('/')
+    setIsSubmitting(true);
+    handleLogin({ email, password });
   }
+
   return (
-    <main>
+    <div className="auth-page">
 
-      <div className="formContainer">
+      {/* Decorative background orbs */}
+      <div className="auth-page__orb auth-page__orb--top" />
+      <div className="auth-page__orb auth-page__orb--bottom" />
 
-        <h1>Login</h1>
+      {/* Main card */}
+      <div className="auth-card">
 
-        <form onSubmit={handleSubmit}>
+        {/* Header */}
+        <div className="auth-header">
+          <span className="auth-header__badge">InterviewAI</span>
+          <h1>Welcome back</h1>
+          <p>Sign in to access your interview plans and reports.</p>
+        </div>
 
-          <div className='input-fields'>
-            <input 
-              type="email" 
-              placeholder='email' 
-              name='email' 
-              onChange = {(e) => {setEmail(e.target.value)}}
-            />
+        {/* Form — no logic changes, only class names updated */}
+        <form className="auth-form" onSubmit={handleSubmit}>
 
-            <input 
-              type="password" 
-              placeholder='password' 
-              name='password'
-              onChange={(e) =>{setPassword(e.target.value)}}
+          <div className="auth-field">
+            <label htmlFor="login-email">Email address</label>
+            <input
+              id="login-email"
+              type="email"
+              placeholder="you@example.com"
+              name="email"
+              autoComplete="email"
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-          <button className='btn'>LogIn</button>
+
+          <div className="auth-field">
+            <label htmlFor="login-password">Password</label>
+            <input
+              id="login-password"
+              type="password"
+              placeholder="••••••••"
+              name="password"
+              autoComplete="current-password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="auth-btn"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Signing in…' : 'Sign In'}
+          </button>
+
         </form>
 
-        <p>Don't have an account? <Link to="/register">Register</Link></p>
+        <div className="auth-divider" />
+
+        {/* Footer */}
+        <p className="auth-footer">
+          Don't have an account? <Link to="/register">Create one</Link>
+        </p>
+
       </div>
-    </main>
-  )
+    </div>
+  );
 }
 
 export default Login

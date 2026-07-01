@@ -1,43 +1,293 @@
-main{
-    height: 100vh;
+// ─────────────────────────────────────────────────────────────────────────────
+// AUTH FORM - Color Reference Guide
+// ─────────────────────────────────────────────────────────────────────────────
+// $bg-page       → Full page background (the darkest layer, behind everything)
+// $bg-card       → The floating auth card surface
+// $bg-input      → Input field background
+// $border-color  → Subtle borders on card and inputs
+// $accent        → Primary brand color (buttons, links, focus rings, glow)
+// $accent-glow   → Soft glow version of accent used in animations/shadows
+// $text-primary  → Main readable text (headings, input values)
+// $text-muted    → Secondary text (labels, placeholders, footnotes)
+// $error-color   → Used for error states (can wire up to form validation later)
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── Color Tokens ─────────────────────────────────────────────────────────────
+$bg-page:      #0d1117;       // Page background — deep navy/black
+$bg-card:      #161b22;       // Card background — slightly lighter than page
+$bg-input:     #1e2535;       // Input field background — muted dark blue
+$border-color: #2a3348;       // Borders — subtle slate blue
+$accent:       #ff2d78;       // Primary accent — vivid pink/rose
+$accent-glow:  rgba(#ff2d78, 0.25);  // Glow layer for accent (used in shadows/orbs)
+$text-primary: #e6edf3;       // Primary text — near-white
+$text-muted:   #7d8590;       // Muted/secondary text — slate gray
+$error-color:  #ff4d4d;       // Error state color — red (for future validation use)
+$font-stack:   system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+// ── Reset / Base ──────────────────────────────────────────────────────────────
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+// ── Page Shell ────────────────────────────────────────────────────────────────
+// The full-screen backdrop that holds the card and the decorative orbs
+.auth-page {
     width: 100%;
+    min-height: 100vh;
+    background-color: $bg-page; // ← Page background
+    color: $text-primary;
+    font-family: $font-stack;
     display: flex;
-    justify-content: center;
     align-items: center;
-}
-
-.formContainer{
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    text-align: center;
-}
-
-form{
-    display: flex;
-    flex-direction: column;
     justify-content: center;
-    align-items: center;
-    gap: 20px;
-    padding: 20px;
+    position: relative;
+    overflow: hidden;
 }
 
-.input-fields{
+// ── Decorative Background Orbs ───────────────────────────────────────────────
+// Two radial gradient blobs positioned at corners to give depth
+.auth-page__orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    pointer-events: none;
+    animation: orb-float 8s ease-in-out infinite alternate;
+
+    // Top-left orb — uses accent color
+    &--top {
+        width: 450px;
+        height: 450px;
+        top: -150px;
+        left: -150px;
+        background: radial-gradient(circle, rgba($accent, 0.18) 0%, transparent 70%); // ← accent glow
+        animation-delay: 0s;
+    }
+
+    // Bottom-right orb — uses a complementary purple tone
+    &--bottom {
+        width: 400px;
+        height: 400px;
+        bottom: -130px;
+        right: -130px;
+        background: radial-gradient(circle, rgba(#a78bfa, 0.14) 0%, transparent 70%); // ← purple glow
+        animation-delay: -4s;
+    }
+}
+
+// ── Auth Card ─────────────────────────────────────────────────────────────────
+// The glass-like floating card that holds the form
+.auth-card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 420px;
+    margin: 1.5rem;
+    background-color: $bg-card; // ← Card surface
+    border: 1px solid $border-color; // ← Card border
+    border-radius: 1.25rem;
+    padding: 2.5rem 2.25rem;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    padding: 10px;
+    gap: 1.75rem;
+    box-shadow:
+        0 0 0 1px rgba($accent, 0.05),    // ← Subtle accent outline
+        0 20px 60px rgba(0, 0, 0, 0.5),   // ← Depth shadow
+        0 0 80px rgba($accent, 0.06);      // ← Soft accent ambient glow
+    animation: card-enter 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-input{
+// ── Card Header ───────────────────────────────────────────────────────────────
+.auth-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+
+    // Small brand badge above the title
+    &__badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: $accent; // ← Accent brand badge text
+        margin-bottom: 0.25rem;
+
+        &::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: $accent; // ← Accent dot
+            box-shadow: 0 0 6px $accent;
+        }
+    }
+
+    h1 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: $text-primary; // ← Heading text
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+    }
+
+    p {
+        font-size: 0.85rem;
+        color: $text-muted; // ← Subtitle text
+        line-height: 1.5;
+        margin-top: 0.15rem;
+    }
+}
+
+// ── Form ─────────────────────────────────────────────────────────────────────
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+// ── Form Field ────────────────────────────────────────────────────────────────
+.auth-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+
+    label {
+        font-size: 0.78rem;
+        font-weight: 500;
+        color: $text-muted; // ← Label text
+        letter-spacing: 0.01em;
+    }
+
+    input {
+        width: 100%;
+        background-color: $bg-input; // ← Input field background
+        border: 1px solid $border-color; // ← Input border (default)
+        border-radius: 0.5rem;
+        padding: 0.7rem 0.9rem;
+        color: $text-primary; // ← Typed text color
+        font-family: $font-stack;
+        font-size: 0.9rem;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+        &::placeholder {
+            color: darken($text-muted, 5%); // ← Placeholder text
+        }
+
+        &:focus {
+            border-color: $accent; // ← Focused input border (accent)
+            box-shadow: 0 0 0 3px $accent-glow; // ← Focused glow ring
+        }
+    }
+}
+
+// ── Submit Button ────────────────────────────────────────────────────────────
+.auth-btn {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    background: linear-gradient(135deg, $accent 0%, darken($accent, 12%) 100%); // ← Accent gradient button
+    color: #ffffff;
+    font-family: $font-stack;
+    font-size: 0.95rem;
+    font-weight: 600;
     border: none;
-    outline: none;
-    padding-inline: 10px;
-    padding-block: 6px;
-    border-radius: 8px;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    margin-top: 0.25rem;
+    position: relative;
+    overflow: hidden;
+
+    // Shine sweep effect on hover
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 60%;
+        height: 100%;
+        background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.12) 50%, transparent 100%);
+        transition: left 0.4s ease;
+    }
+
+    &:hover {
+        opacity: 0.92;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba($accent, 0.4); // ← Hover glow shadow
+
+        &::after {
+            left: 150%; // ← Triggers the shine sweep
+        }
+    }
+
+    &:active {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    &:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        transform: none;
+    }
 }
 
-Link{
-    text-decoration: none;
-    color: #c41f5e;
+// ── Divider ───────────────────────────────────────────────────────────────────
+.auth-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, $border-color, transparent); // ← Fade-out divider
+}
+
+// ── Footer Link ───────────────────────────────────────────────────────────────
+.auth-footer {
+    text-align: center;
+    font-size: 0.83rem;
+    color: $text-muted; // ← Footer text
+
+    a {
+        color: $accent; // ← Link color (accent)
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.15s ease, text-decoration 0.15s ease;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+// ── Loading Screen ────────────────────────────────────────────────────────────
+.auth-loading {
+    width: 100%;
+    min-height: 100vh;
+    background-color: $bg-page; // ← Page background
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $text-muted;
+    font-family: $font-stack;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+}
+
+// ── Animations ────────────────────────────────────────────────────────────────
+@keyframes card-enter {
+    from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes orb-float {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(20px, 20px) scale(1.05); }
 }

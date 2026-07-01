@@ -47,10 +47,26 @@ export const useAuth = () =>{
     }
 
     useEffect(() =>{
-        const getAndSetUser = async () =>{
-            const data = await getme()
-            setUser(data.user)
-            setLoading(false)
+
+        const getAndSetUser = async () => {
+            try {
+                const data = await getme()
+                
+                if (data && data.user) {
+
+                    setUser(data.user)
+
+                } else {
+                    setUser(null)
+                }
+            } catch (err) {
+
+                console.log("User is not authenticated:", err.message)
+                setUser(null) // Clear user state on authentication failure
+                
+            } finally {
+                setLoading(false)
+            }
         }
         getAndSetUser()
     },[])

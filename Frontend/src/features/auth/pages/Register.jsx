@@ -1,68 +1,118 @@
-import React, {useState} from 'react'
-import {useNavigate, Link} from 'react-router';
+import React from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate, Link } from 'react-router';
 import { useAuth } from '../hooks/useAuth';
-
-
+import './auth.form.scss';
 
 const Register = () => {
   const navigate = useNavigate();
+  const { loading, handleRegister, handleLogout, user } = useAuth();
 
-  const {loading, handleRegister} = useAuth()
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [username, setUsername] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  // ── Auto-logout: if an authenticated user lands on /register, log them out
+  useEffect(() => {
+    if (!loading && user && !isSubmitting) {
+      handleLogout();
+    }
+  }, [loading, user, isSubmitting]);
 
-  if (loading) {
-    return (<main><h1>Loading.......</h1></main>)
+  // ── Auto-redirect: navigate to home once registration succeeds
+  useEffect(() => {
+    if (user && isSubmitting) {
+      navigate('/');
+    }
+  }, [user, isSubmitting, navigate]);
+
+  if (loading && !isSubmitting) {
+    return <div className="auth-loading">Checking session...</div>;
   }
 
   function handleSubmit(e) {
     e.preventDefault();
-    handleRegister({username,email, password })
-    navigate('/')
+    setIsSubmitting(true);
+    handleRegister({ username, email, password });
   }
+
   return (
-    <main>
+    <div className="auth-page">
 
-      <div className="formContainer">
+      {/* Decorative background orbs */}
+      <div className="auth-page__orb auth-page__orb--top" />
+      <div className="auth-page__orb auth-page__orb--bottom" />
 
-        <h1>Register</h1>
+      {/* Main card */}
+      <div className="auth-card">
 
-        <form onSubmit={handleSubmit}>
+        {/* Header */}
+        <div className="auth-header">
+          <span className="auth-header__badge">InterviewAI</span>
+          <h1>Create your account</h1>
+          <p>Join thousands of candidates preparing smarter with AI.</p>
+        </div>
 
-          <div className='input-fields'>
-            
-            <input 
-              type="text" 
-              placeholder='username' 
-              name='username'
-              onChange={(e) =>{setUsername(e.target.value)}} 
-            />
+        {/* Form — no logic changes, only class names updated */}
+        <form className="auth-form" onSubmit={handleSubmit}>
 
+          <div className="auth-field">
+            <label htmlFor="register-username">Username</label>
             <input
-              type="email" 
-              placeholder='email' 
-              name='email' 
-              onChange={(e) =>{setEmail(e.target.value)}}
+              id="register-username"
+              type="text"
+              placeholder="yourname"
+              name="username"
+              autoComplete="username"
+              onChange={(e) => setUsername(e.target.value)}
             />
-
-            <input 
-              type="password" 
-              placeholder='password' 
-              name='password'
-              onChange={(e) =>{setPassword(e.target.value)}}
-            />
-            
           </div>
-          <button className='btn'>Create Account</button>
+
+          <div className="auth-field">
+            <label htmlFor="register-email">Email address</label>
+            <input
+              id="register-email"
+              type="email"
+              placeholder="you@example.com"
+              name="email"
+              autoComplete="email"
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          <div className="auth-field">
+            <label htmlFor="register-password">Password</label>
+            <input
+              id="register-password"
+              type="password"
+              placeholder="••••••••"
+              name="password"
+              autoComplete="new-password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="auth-btn"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Creating account…' : 'Create Account'}
+          </button>
+
         </form>
 
-        <p>Already have an account? <Link to="/login">Login</Link>
+        <div className="auth-divider" />
+
+        {/* Footer */}
+        <p className="auth-footer">
+          Already have an account? <Link to="/login">Sign in</Link>
         </p>
+
       </div>
-    </main>
-  )
+    </div>
+  );
 }
 
 export default Register

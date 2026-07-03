@@ -1,3 +1,4 @@
+import ErrorBoundary from "./features/auth/components/ErrorBoundary.jsx";
 import { RouterProvider } from "react-router"
 import { router } from "./app.routes.jsx";
 import { AuthProvider } from "./features/auth/Auth.context.jsx";
@@ -6,12 +7,14 @@ import { InterviewProvider } from "./features/interview/interview.context.jsx";
 function App() {
 
   return (
-    <AuthProvider>
-      <InterviewProvider>
-        <RouterProvider router={router} />
-      </InterviewProvider>
-      
-    </AuthProvider>
+
+    <ErrorBoundary> 
+      <AuthProvider>
+        <InterviewProvider>
+           <RouterProvider router={router} />
+        </InterviewProvider>
+      </AuthProvider>
+    </ErrorBoundary>
     
   )
 }

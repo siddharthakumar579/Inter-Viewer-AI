@@ -12,6 +12,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
 
   // ── Auto-logout: if an authenticated user lands on /register, log them out
   useEffect(() => {
@@ -31,10 +32,17 @@ const Register = () => {
     return <div className="auth-loading">Checking session...</div>;
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setIsSubmitting(true);
-    handleRegister({ username, email, password });
+    setError(null)
+    
+    try {
+      await handleRegister({ username, email, password });
+    } catch (err) {
+      setError(err.response?.data?.message || "Registration failed. Please try again.");
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -54,7 +62,7 @@ const Register = () => {
           <p>Join thousands of candidates preparing smarter with AI.</p>
         </div>
 
-        {/* Form — no logic changes, only class names updated */}
+        {error && <div className="auth-error">{error}</div>}
         <form className="auth-form" onSubmit={handleSubmit}>
 
           <div className="auth-field">

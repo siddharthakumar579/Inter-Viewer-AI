@@ -9,14 +9,16 @@ async function authuser (req,res,next){
             message: "No token found"
         })
     }
-    const isTokenBlacklisted = await blacklistTokenModel.findOne({token});
-    if (isTokenBlacklisted) {
-        return res.status(401).json({
-            message: "Invalid Token"
-        })
-    }
 
-    try {
+    try{
+        const isTokenBlacklisted = await blacklistTokenModel.findOne({token});
+
+        if (isTokenBlacklisted) {
+            return res.status(401).json({
+                message: "Invalid Token"
+            })
+        }
+
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         req.user = decoded

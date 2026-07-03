@@ -44,7 +44,7 @@ const interviewReportSchema = z.object({
 const interviewJsonSchema = zodToJsonSchema(interviewReportSchema);
 delete interviewJsonSchema.$schema;
 
-async function generateInterviewReport({resume, selfDescription, jobDescription}) {
+async function generateInterviewReport({resume, selfDescription, jobDescription}){
 
     const prompt = `
     You are an expert technical interviewer. Generate a comprehensive interview report for the candidate.
@@ -68,23 +68,36 @@ async function generateInterviewReport({resume, selfDescription, jobDescription}
             schema: interviewJsonSchema
         },
     })
-    // const interviewReport = interviewReportSchema.parse(JSON.parse(interaction.output_text));
-    // return interviewReport
+   
 
     const cleanedText = interaction.output_text.replace(/```json\s*|```/g, "").trim();
     const interviewReport = interviewReportSchema.parse(JSON.parse(cleanedText));
     return interviewReport;
 }
 
-async function generatePdfFromHtml(htmlContent) {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+const generatePdfFromHtml = async (htmlContent) => {
 
-    const pdfBuffer = await page.pdf({ format: 'A4' });
-    await browser.close();
-    return pdfBuffer;
-}
+    const browser = await puppeteer.launch({ 
+        args: ['--no-sandbox', '--disable-setuid-sandbox'] 
+    });
+    
+    try {
+        const page = await browser.newPage();
+        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+        
+        const pdfBuffer = await page.pdf({
+            format: 'A4',
+            printBackground: true,
+            margin: { top: '20px', right: '20px', bottom: '20px', left: '20px' }
+        });
+        
+        return pdfBuffer;
+
+    } finally {
+        // This ALWAYS runs, preventing memory leaks!
+        await browser.close();
+    }
+};
 
 const generateResumePDF = async ({resume, selfDescription, jobDescription}) => {
      const resumePDFSchema = z.object({

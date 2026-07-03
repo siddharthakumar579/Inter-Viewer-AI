@@ -1,10 +1,19 @@
-const multer = require('multer')
+const multer = require('multer');
 
-const upload = multer({
+const upload = multer({ 
     storage: multer.memoryStorage(),
-    limits:{
-        fielSize: 3*1024*1024                      // 3MB
+    limits: {
+        fileSize: 3 * 1024 * 1024 // 3MB limit (Fixed typo here)
+    },
+
+    fileFilter: (req, file, cb) => {
+        // Only accept PDF files
+        if (file.mimetype === 'application/pdf') {
+            cb(null, true);
+        } else {
+            cb(new Error('Only PDF files are allowed!'), false);
+        }
     }
-})
+});
 
 module.exports = upload;

@@ -34,7 +34,34 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
 .top-actions {
     position: absolute;
     top: 1.5rem;
+    left: 1.5rem;
     right: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brand-title {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: $text-primary;
+    letter-spacing: -0.02em;
+    
+    img {
+        width: 32px;
+        height: 32px;
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+    }
+    
+    span {
+        background: linear-gradient(135deg, $accent-alt 0%, $accent 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
 }
 
 .logout-btn {

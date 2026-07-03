@@ -11,6 +11,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
 
   // ── Auto-logout: if an authenticated user lands on /login, log them out
   useEffect(() => {
@@ -30,10 +31,19 @@ const Login = () => {
     return <div className="auth-loading">Checking session...</div>;
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setIsSubmitting(true);
-    handleLogin({ email, password });
+    setError(null);
+
+    try{
+      await handleLogin({ email, password });
+
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed. Please try again.");
+      setIsSubmitting(false); // Reset the button!
+    }
+    
   }
 
   return (
@@ -48,12 +58,12 @@ const Login = () => {
 
         {/* Header */}
         <div className="auth-header">
-          <span className="auth-header__badge">InterviewAI</span>
+          <span className="auth-header__badge">Inter-Viewer AI</span>
           <h1>Welcome back</h1>
           <p>Sign in to access your interview plans and reports.</p>
         </div>
 
-        {/* Form — no logic changes, only class names updated */}
+        {error && <div className="auth-error">{error}</div>}
         <form className="auth-form" onSubmit={handleSubmit}>
 
           <div className="auth-field">

@@ -11,51 +11,67 @@ export const useInterview = () =>{
         throw new Error("useInterview must be used within an InterviewProvider")
     }
 
-    const {loading, setLoading, report, setReport, reports, setReports} = context;
+    const {loading, setLoading, isGenerating, setIsGenerating, report, setReport, reports, setReports} = context;
 
     const generateReport = async ({jobDescription, selfDescription, resumeFile}) =>{
-        setLoading(true)
+
+        setIsGenerating(true)
         let response = null
+
         try{
             response = await generateInterviewReport({jobDescription, selfDescription, resumeFile})
             setReport(response.interviewReport)
+
+            return response.interviewReport
+
         } catch (error){
             console.error("Error creating interview report:", error);
             throw error;
         } finally {
-            setLoading(false)
+            setIsGenerating(false)
         }
-        return response.interviewReport
+        
     }
 
     const getReportById = async (interviewId) => {
+
         setLoading(true)
         let response = null
+
         try{
+
             response = await getInterviewReportbyId(interviewId)
             setReport(response.interviewReport)
+            return response.interviewReport
+
         } catch (error){
             console.error("Error fetching interview report:", error);
             throw error;
         } finally {
             setLoading(false)
         }
-        return response.interviewReport
+       
     }
 
     const getReports = async () => {
+
         setLoading(true)
         let response = null
+
         try{
+
             response = await getAllInterviewReports()
             setReports(response.interviewReports)
+
+            return response.interviewReports
+
         } catch (error){
             console.error("Error fetching all interview reports:", error);
             throw error;
         } finally {
             setLoading(false)
         }
-        return response.interviewReports
+       
     }
 
     const getResumePdf = async (interviewId) =>{
@@ -82,16 +98,23 @@ export const useInterview = () =>{
         }
     }
 
-    useEffect(() =>{
-        if(interviewId){
-            getReportById(interviewId)
-        }else{
-            getReports()
-        }
-    }, [ interviewId ])
+    useEffect(() => {
+        const fetchInitialData = async () => {
+            try {
+                if(interviewId){
+                    await getReportById(interviewId)
+                }
+                await getReports()
+            } catch (error) {
+                console.error("Error loading initial interview data", error);
+            }
+        };
+        fetchInitialData();
+    }, [interviewId])
 
     return {
         loading,
+        isGenerating,
         report,
         reports,
         generateReport,

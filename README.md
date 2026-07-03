@@ -1,59 +1,92 @@
-InterviewAI
-AI-powered interview preparation platform that analyzes your resume against job descriptions, generates personalized interview plans, and builds ATS-friendly resumes — all in one place.
+# Inter-Viewer AI 🚀
 
-Features
-AI Interview Plans — Paste a job description and upload your resume to get a detailed match analysis, strengths, weaknesses, and tailored interview questions.
-ATS-Friendly Resume — Download an optimized resume rewritten by AI to better match the job you're targeting.
-Report History — Access your past interview reports anytime from the home page.
-Authentication — Secure user accounts with JWT-based auth and HTTP-only cookies.
-Tech Stack
-Layer	Technologies
-Frontend	React 19, Vite, SCSS, React Router, Axios
-Backend	Node.js, Express 5, Mongoose, Multer, Puppeteer
-AI	Google Gemini SDK, Zod (structured output validation)
-Database	MongoDB Atlas
-Getting Started
-Prerequisites
-Node.js (v18+)
-MongoDB Atlas account (or local MongoDB)
-Google Gemini API key
-Installation
-Clone the repo
+Inter-Viewer AI is a full-stack MERN application that leverages the power of Google's Gemini AI to generate custom, highly-tailored interview preparation strategies. By analyzing a candidate's resume and a specific job description, it provides a comprehensive breakdown of technical questions, behavioral questions, skill gaps, and a day-by-day preparation roadmap.
 
-git clone https://github.com/siddharthakumar579/Scatch.git
+---
+
+## ✨ Key Features
+- **AI-Powered Analysis:** Matches your resume against a target job description to calculate a compatibility score.
+- **Custom Interview Questions:** Generates highly relevant Technical and Behavioral questions (with model answers) based on the job requirements.
+- **Skill Gap Identification:** Highlights missing skills and ranks them by severity so you know exactly what to study.
+- **Day-by-Day Preparation Roadmap:** Creates an actionable study plan leading up to your interview.
+- **Secure Authentication:** JWT-based user login and registration.
+- **PDF Resume Parsing:** Safely uploads and parses PDF resumes using `multer` and `pdf-parse`.
+- **Modern UI/UX:** Built with React, Vite, and custom SCSS featuring glassmorphism, dynamic loaders, and interactive components.
+
+---
+
+## 🛠️ Tech Stack
+**Frontend:**
+- React (Vite)
+- React Router DOM
+- Axios
+- SCSS (Custom Styles)
+
+**Backend:**
+- Node.js & Express.js
+- MongoDB & Mongoose (Database)
+- Google Gemini AI API (`@google/genai`)
+- JWT (Authentication)
+- Multer (File Uploads)
+- PDF-Parse (Resume Text Extraction)
+
+---
+
+## 🚀 Getting Started (Local Development)
+
+### 1. Prerequisites
+- Node.js installed
+- A MongoDB URI (Local or Atlas)
+- A Google Gemini API Key
+
+### 2. Clone the Repository
+```bash
+git clone https://github.com/yourusername/Scatch.git
 cd Scatch
-Setup Backend
+```
 
+### 3. Backend Setup
+```bash
 cd Backend
 npm install
-Setup Frontend
-
-cd FrontEnd
-npm install
-Create environment file
-
-Create a .env file inside the Backend/ folder:
-
+```
+Create a `.env` file in the `Backend` directory:
+```env
 PORT=3000
 MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-GEMINI_API_KEY=your_gemini_api_key
-Running the app
-Start the backend and frontend in separate terminals:
-
-# Terminal 1 — Backend
-cd Backend
-node server.js
-
-# Terminal 2 — Frontend
-cd FrontEnd
+JWT_SECRET=your_super_secret_jwt_key
+GEMINI_API_KEY=your_google_gemini_api_key
+FRONTEND_URL=http://localhost:5173
+```
+Start the backend server:
+```bash
 npm run dev
-The frontend runs on http://localhost:5173 and the backend on http://localhost:3000.
+# Server will run on http://localhost:3000
+```
 
-How It Works
-Sign up / Log in to your account.
-Paste a job description in the left panel on the home page.
-Upload either your resume (PDF) or type a self-description or both in the right panel.
-Click Generate — Gemini AI analyzes the match and creates a personalized interview preparation report.
-View your report with match score, suggested questions, and improvement areas.
-Download an ATS-optimized resume tailored to the job description.
+### 4. Frontend Setup
+```bash
+cd ../FrontEnd
+npm install
+```
+Create a `.env` file in the `FrontEnd` directory:
+```env
+VITE_API_URL=http://localhost:3000
+```
+Start the frontend development server:
+```bash
+npm run dev
+# App will run on http://localhost:5173
+```
+
+---
+
+## 🌍 Deployment
+This project is configured for cloud deployment.
+- **Frontend:** Deploy the `FrontEnd` folder to **Vercel** or **Netlify**. Make sure to set the `VITE_API_URL` environment variable to your live backend URL.
+- **Backend:** Deploy the `Backend` folder to **Render** or **Railway**. Make sure to set the `FRONTEND_URL` environment variable to your live frontend URL to allow CORS.
+
+---
+
+## 📝 License
+This project is licensed under the MIT License.
